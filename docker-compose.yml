@@ -1,0 +1,33 @@
+# docker-compose.yml
+# Production-ready compose setup for Meeting Summarizer
+
+services:
+  backend:
+    build: ./backend
+    container_name: meeting-summarizer-backend
+    command: uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+
+  worker:
+    build: ./backend
+    container_name: meeting-summarizer-worker
+    command: celery -A app.tasks.celery_app worker --loglevel=info -Q transcribe_queue
+    env_file:
+      - ./backend/.env
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7-alpine
+    container_name: meeting-summarizer-redis
+    ports:
+      - "6379:6379"

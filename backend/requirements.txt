@@ -1,0 +1,10 @@
+fastapi
+uvicorn[standard]
+python-dotenv
+openai
+celery[redis]
+SQLAlchemy
+alembic
+pydantic
+requests
+boto3
